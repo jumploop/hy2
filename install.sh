@@ -238,7 +238,31 @@ outbounds:
     socks5:
       addr: 127.0.0.1:1080
 
+resolver:
+  type: udp | tcp | tls | https 
+  tcp:
+    addr: 8.8.8.8:53 
+    timeout: 4s 
+  udp:
+    addr: 8.8.4.4:53 
+    timeout: 4s
+  tls:
+    addr: 1.1.1.1:853 
+    timeout: 10s
+    sni: cloudflare-dns.com 
+    insecure: false 
+  https:
+    addr: 1.1.1.1:443 
+    timeout: 10s
+    sni: cloudflare-dns.com
+    insecure: false
 EOF
+
+
+# 优化 Hy2
+sysctl -w net.core.rmem_max=16777216
+sysctl -w net.core.wmem_max=16777216
+
 
 # 重启 Hy2
 echo
