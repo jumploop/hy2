@@ -4,7 +4,7 @@ Hy2 极简一键脚本
 ## 一键执行
 
 ```
-bash <(curl -L https://github.com/crazypeace/hy2/raw/main/install.sh)
+bash <(curl -L https://github.com/jumploop/hy2/raw/main/install.sh)
 ```
 
 # Uninstall
@@ -14,11 +14,11 @@ bash <(curl -fsSL https://get.hy2.sh/) --remove
 
 ## 带参数执行方式
 ```
-bash <(curl -L https://github.com/crazypeace/hy2/raw/main/install.sh) <netstack> <port> <domain> <password>
+bash <(curl -L https://github.com/jumploop/hy2/raw/main/install.sh) <netstack> <port> <domain> <password>
 ```
 如
 ```
-bash <(curl -L https://github.com/crazypeace/hy2/raw/main/install.sh) 4 2096 bing.com d3b27d90-507d-30c0-93db-42982a5a33a7
+bash <(curl -L https://github.com/jumploop/hy2/raw/main/install.sh) 4 2096 bing.com d3b27d90-507d-30c0-93db-42982a5a33a7
 ```
 
 
