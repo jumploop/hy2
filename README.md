@@ -21,6 +21,10 @@ bash <(curl -L https://github.com/jumploop/hy2/raw/main/install.sh) <netstack> <
 bash <(curl -L https://github.com/jumploop/hy2/raw/main/install.sh) 4 2096 bing.com d3b27d90-507d-30c0-93db-42982a5a33a7
 ```
 
+hysteria2 纯净版一键安装
+
+wget -N --no-check-certificate https://raw.githubusercontent.com/jumploop/hy2/main/hysteria.sh && bash hysteria.sh
+
 
 ## 手搓步骤如下
 
