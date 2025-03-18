@@ -260,9 +260,13 @@ EOF
 
 
 # 优化 Hy2
-sysctl -w net.core.rmem_max=16777216
-sysctl -w net.core.wmem_max=16777216
+# 将发送、接收两个缓冲区都设置为 16 MB
+cat >/etc/sysctl.d/hysteria.conf <<-EOF
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+EOF
 
+sysctl -p /etc/sysctl.d/hysteria.conf
 
 # 重启 Hy2
 echo
