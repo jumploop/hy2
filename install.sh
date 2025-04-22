@@ -217,12 +217,6 @@ listen: :${port}     # 工作端口
 tls:
   cert: ${cert_dir}/${domain}.crt    # 证书路径
   key: ${cert_dir}/${domain}.key     # 证书路径
-
-quic:
-  initStreamReceiveWindow: 16777216
-  maxStreamReceiveWindow: 16777216
-  initConnReceiveWindow: 33554432
-  maxConnReceiveWindow: 33554432
   
 auth:
   type: password
