@@ -217,7 +217,13 @@ listen: :${port}     # 工作端口
 tls:
   cert: ${cert_dir}/${domain}.crt    # 证书路径
   key: ${cert_dir}/${domain}.key     # 证书路径
-  
+
+quic:
+  initStreamReceiveWindow: 26843545
+  maxStreamReceiveWindow: 26843545
+  initConnReceiveWindow: 67108864
+  maxConnReceiveWindow: 67108864
+
 auth:
   type: password
   password: ${pwd}    # 密码
@@ -251,11 +257,20 @@ EOF
 
 sysctl -p /etc/sysctl.d/hysteria.conf
 
+# 进程优先级
+mkdir -p /etc/systemd/system/hysteria-server.service.d/
+cat >/etc/systemd/system/hysteria-server.service.d/priority.conf <<-EOF
+[Service]
+CPUSchedulingPolicy=rr
+CPUSchedulingPriority=99
+EOF
+
 # 重启 Hy2
 echo
 echo -e "${yellow}重启 Hy2${none}"
 echo "----------------------------------------------------------------"
-service hysteria-server restart
+systemctl daemon-reload
+systemctl restart hysteria-server.service
 
 echo
 echo
