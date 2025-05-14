@@ -251,6 +251,13 @@ EOF
 
 sysctl -p /etc/sysctl.d/hysteria.conf
 
+# 进程优先级
+mkdir -p /etc/systemd/system/hysteria-server.service.d/
+cat >/etc/systemd/system/hysteria-server.service.d/priority.conf <<-EOF
+[Service]
+CPUSchedulingPolicy=rr
+CPUSchedulingPriority=99
+EOF
 
 # 重启 Hy2
 echo
