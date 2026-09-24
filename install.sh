@@ -26,9 +26,12 @@ pause() {
 echo
 echo -e "${yellow}此脚本仅兼容于Debian 10+系统. 如果你的系统不符合,请Ctrl+C退出脚本${none}"
 echo -e "可以去 ${cyan}https://github.com/crazypeace/hy2${none} 查看脚本整体思路和关键命令, 以便针对你自己的系统做出调整."
-echo -e "有问题加群 ${cyan}https://t.me/+ISuvkzFGZPBhMzE1${none}"
+echo -e "有问题加群 ${cyan}https://t.me/+q5WPfGjtwukyZjhl${none}"
 echo -e "本脚本支持带参数执行, 省略交互过程, 详见GitHub."
 echo "----------------------------------------------------------------"
+
+# 确保有 curl 和 wget
+apt-get -y install curl wget -qq
 
 # 本机 IP
 InFaces=($(ls /sys/class/net/ | grep -E '^(eth|ens|eno|esp|enp|venet|vif)'))  #找所有的网口
@@ -47,7 +50,7 @@ for i in "${InFaces[@]}"; do  # 从网口循环获取IP
 done
 
 # 通过IP, host, 时区, 生成UUID. 重装脚本不改变, 不改变节点信息, 方便个人使用
-uuidSeed=${IPv4}${IPv6}$(cat /proc/sys/kernel/hostname)$(cat /etc/timezone)
+uuidSeed=${IPv4}${IPv6}$(cat /proc/sys/kernel/hostname)$(timedatectl | awk '/Time zone/ {print $3}')
 default_uuid=$(curl -sL https://www.uuidtools.com/api/generate/v3/namespace/ns:dns/name/${uuidSeed} | grep -oP '[^-]{8}-[^-]{4}-[^-]{4}-[^-]{4}-[^-]{12}')
 
 # 如果你想使用纯随机的UUID
@@ -113,7 +116,7 @@ pause
 
 # 准备工作
 apt update
-apt install -y curl openssl qrencode net-tools lsof
+apt install -y curl wget openssl qrencode net-tools lsof
 
 # Hy2官方脚本 安装最新版本
 echo
@@ -200,12 +203,15 @@ if [[ -z $pwd ]]; then
 fi
 
 # 生成证书
-echo -e "${yellow}生成证书 ${cert_dir}/ ${none}"
+echo -e "${yellow}生成证书${none}"
 echo "----------------------------------------------------------------"
 cert_dir="/etc/ssl/private"
 mkdir -p ${cert_dir}
 openssl req -x509 -nodes -newkey ec:<(openssl ecparam -name prime256v1) -keyout "${cert_dir}/${domain}.key" -out "${cert_dir}/${domain}.crt" -subj "/CN=${domain}" -days 36500
 chmod -R 777 ${cert_dir}
+
+# 生成 pinSHA256
+pinsha256_cert=$(openssl x509 -in "${cert_dir}/${domain}.crt" -outform DER | sha256sum | awk '{print $1}')
 
 # 配置 /etc/hysteria/config.yaml
 echo
@@ -275,6 +281,7 @@ echo -e "$yellow 密码 (Password) = ${cyan}${pwd}${none}"
 echo -e "$yellow 传输层安全 (TLS) = ${cyan}tls${none}"
 echo -e "$yellow 应用层协议协商 (Alpn) = ${cyan}h3${none}"
 echo -e "$yellow 跳过证书验证 (allowInsecure) = ${cyan}true${none}"
+echo -e "$yellow 证书指纹 (pinSHA256) = ${cyan}${pinsha256_cert}${none}"
 echo
 
 # 如果是 IPv6 那么在生成节点分享链接时, 要用[]把IP包起来
@@ -282,7 +289,7 @@ if [[ $netstack == "6" ]]; then
     ip="[${ip}]"
 fi
 echo "---------- 链接 URL ----------"
-hy2_url="hysteria2://${pwd}@${ip}:${port}?alpn=h3&insecure=1#HY2_${ip}"
+hy2_url="hysteria2://${pwd}@${ip}:${port}?alpn=h3&insecure=1&pinSHA256=${pinsha256_cert}#HY2_${ip}"
 echo -e "${cyan}${hy2_url}${none}"
 echo
 sleep 3
